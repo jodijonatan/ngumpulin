@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Hashing Password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
+        // Asumsi db_prepare_and_execute tersedia dan berfungsi
         $query = "INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)";
         $stmt = db_prepare_and_execute($query, "ssss", [$username, $hashedPassword, $name, $role]);
 
@@ -137,19 +138,27 @@ $students = $result->fetch_all(MYSQLI_ASSOC);
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<div class="container-fluid">
+<div class="container-fluid py-4">
   <?php if ($formSuccess): ?>
-    <div class="alert alert-success mt-3"><?= htmlspecialchars($formSuccess) ?></div>
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <div><?= htmlspecialchars($formSuccess) ?></div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   <?php endif; ?>
   <?php if ($formError): ?>
-    <div class="alert alert-danger mt-3"><?= htmlspecialchars($formError) ?></div>
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <div><?= htmlspecialchars($formError) ?></div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   <?php endif; ?>
 
   <?php if ($action === 'create' || $action === 'edit'): ?>
 
-    <div class="card mb-4">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0"><?= $formTitle ?></h4>
+    <div class="card shadow-lg mb-4">
+      <div class="card-header bg-primary text-white p-3">
+        <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> <?= $formTitle ?></h4>
       </div>
       <div class="card-body">
         <form method="POST" action="students.php">
@@ -157,68 +166,113 @@ require_once __DIR__ . '/../../includes/header.php';
           <input type="hidden" name="id" value="<?= htmlspecialchars($studentData['id']) ?>">
 
           <div class="mb-3">
-            <label for="name" class="form-label">Nama Lengkap</label>
-            <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($studentData['name']) ?>" required>
+            <label for="name" class="form-label fw-semibold">Nama Lengkap</label>
+            <input type="text" class="form-control form-control-lg" id="name" name="name" value="<?= htmlspecialchars($studentData['name']) ?>" placeholder="Masukkan nama lengkap peserta" required>
           </div>
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" value="<?= htmlspecialchars($studentData['username']) ?>" required>
+            <label for="username" class="form-label fw-semibold">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="<?= htmlspecialchars($studentData['username']) ?>" placeholder="Username login unik" required>
           </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password <?= ($action === 'edit') ? '(Kosongkan jika tidak diubah)' : '' ?></label>
-            <input type="password" class="form-control" id="password" name="password">
+          <div class="mb-4">
+            <label for="password" class="form-label fw-semibold">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="<?= ($action === 'edit') ? 'Kosongkan jika tidak diubah' : 'Wajib diisi untuk peserta baru' ?>">
+            <?php if ($action === 'edit'): ?>
+              <div class="form-text text-muted">Abaikan kolom ini jika Anda tidak ingin mengubah password saat ini.</div>
+            <?php endif; ?>
           </div>
 
-          <button type="submit" class="btn btn-success me-2"><?= ($action === 'edit') ? 'Perbarui Data' : 'Tambah Peserta' ?></button>
-          <a href="students.php" class="btn btn-secondary">Batal</a>
+          <div class="d-flex justify-content-end border-top pt-3">
+            <a href="students.php" class="btn btn-secondary me-2">
+              <i class="fas fa-times me-1"></i> Batal
+            </a>
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-save me-1"></i> <?= ($action === 'edit') ? 'Perbarui Data' : 'Tambah Peserta' ?>
+            </button>
+          </div>
         </form>
       </div>
     </div>
 
   <?php endif; ?>
 
-  <?php if ($action === 'read' || $action === 'delete'): // Tampilkan daftar setelah delete/read 
+  <?php if ($action === 'read' || $action === 'delete' || ($action === 'create' && $formError) || ($action === 'edit' && $formError)): // Tampilkan daftar jika bukan mode form atau setelah operasi CRUD 
   ?>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Daftar Peserta Ekskul (<?= count($students) ?>)</h3>
-      <a href="students.php?action=create" class="btn btn-primary">Tambah Peserta Baru</a>
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+      <h3 class="mb-0"><i class="fas fa-users me-2"></i> Daftar Peserta Ekskul</h3>
+      <span class="badge bg-info text-dark p-2 shadow-sm">Total: <?= count($students) ?> peserta</span>
+      <a href="students.php?action=create" class="btn btn-primary shadow-sm">
+        <i class="fas fa-user-plus me-1"></i> Tambah Peserta Baru
+      </a>
     </div>
 
-    <?php if (count($students) > 0): ?>
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Username</th>
-              <th>Nama Lengkap</th>
-              <th>Bergabung</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php $no = 1;
-            foreach ($students as $student): ?>
-              <tr>
-                <td><?php echo $no++; ?></td>
-                <td><?php echo htmlspecialchars($student['username']); ?></td>
-                <td><?php echo htmlspecialchars($student['name']); ?></td>
-                <td><?php echo date('d M Y', strtotime($student['created_at'])); ?></td>
-                <td>
-                  <a href="students.php?action=edit&id=<?php echo $student['id']; ?>" class="btn btn-sm btn-warning me-1">Edit</a>
-                  <a href="students.php?action=delete&id=<?php echo $student['id']; ?>" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Yakin ingin menghapus peserta \'<?= htmlspecialchars($student['name']) ?>\'? Tindakan ini permanen!');">Hapus</a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
+    <div class="card shadow-lg border-0">
+      <div class="card-header bg-light border-bottom">
+        <h5 class="mb-0 text-dark">Data Akun Peserta</h5>
       </div>
-    <?php else: ?>
-      <div class="alert alert-info" role="alert">
-        Belum ada peserta dengan role 'student' yang terdaftar.
+      <div class="card-body p-0">
+        <?php if (count($students) > 0): ?>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+              <thead class="table-secondary">
+                <tr>
+                  <th style="width: 5%;">#</th>
+                  <th style="width: 25%;"><i class="fas fa-id-badge me-1"></i> Nama Lengkap</th>
+                  <th style="width: 20%;"><i class="fas fa-user me-1"></i> Username</th>
+                  <th style="width: 20%;"><i class="fas fa-calendar-alt me-1"></i> Bergabung Sejak</th>
+                  <th style="width: 30%;"><i class="fas fa-cogs me-1"></i> Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php $no = 1;
+                foreach ($students as $student): ?>
+                  <tr>
+                    <td><?php echo $no++; ?></td>
+                    <td>
+                      <div class="fw-bold"><?php echo htmlspecialchars($student['name']); ?></div>
+                    </td>
+                    <td><?php echo htmlspecialchars($student['username']); ?></td>
+                    <td><?php echo date('d M Y', strtotime($student['created_at'])); ?></td>
+                    <td>
+                      <a href="students.php?action=edit&id=<?php echo $student['id']; ?>" class="btn btn-sm btn-warning me-2 text-dark" title="Edit Data">
+                        <i class="fas fa-edit"></i> Edit
+                      </a>
+                      <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $student['id']; ?>" title="Hapus Akun">
+                        <i class="fas fa-trash-alt"></i> Hapus
+                      </button>
+
+                      <div class="modal fade" id="deleteModal<?php echo $student['id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $student['id']; ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                              <h5 class="modal-title" id="deleteModalLabel<?php echo $student['id']; ?>">Konfirmasi Hapus Peserta</h5>
+                              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              Anda yakin ingin menghapus peserta **<?php echo htmlspecialchars($student['name']); ?>** (Username: **<?php echo htmlspecialchars($student['username']); ?>**)?<br>Tindakan ini permanen dan akan menghapus semua data terkait peserta ini!
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                              <a href="students.php?action=delete&id=<?php echo $student['id']; ?>" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Ya, Hapus Permanen
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="alert alert-info m-3" role="alert">
+            <i class="fas fa-info-circle me-2"></i> Belum ada peserta dengan role 'student' yang terdaftar. Silakan tambahkan peserta baru.
+          </div>
+        <?php endif; ?>
       </div>
-    <?php endif; ?>
+    </div>
   <?php endif; ?>
 </div>
 
