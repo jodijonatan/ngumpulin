@@ -1,12 +1,13 @@
 <?php
-// includes/header.php (Diperbarui untuk Layout Universal Sidebar)
+// includes/header_student.php (Hanya untuk Role 'student')
 
-// Pastikan $pageTitle didefinisikan sebelum include header.php di halaman utama
-$pageTitle = $pageTitle ?? "Halaman Utama";
-$userRole = $_SESSION['user']['role'] ?? 'guest'; // Ambil role user
+// Pastikan config dan session sudah dimuat sebelum file ini dipanggil.
+$pageTitle = $pageTitle ?? "Daftar Tugas";
+$userRole = $_SESSION['user']['role'] ?? 'student'; // Harusnya selalu 'student'
+$userName = $_SESSION['user']['username'] ?? 'Peserta'; // Ambil username/nama jika ada
 
 // Function untuk generate link sidebar
-function generateSidebarLink($title, $url, $currentPageTitle)
+function generateSidebarLinkStudent($title, $url, $currentPageTitle)
 {
   $activeClass = ($currentPageTitle === $title) ? 'active' : '';
   $baseUrl = BASE_URL;
@@ -74,22 +75,11 @@ function generateSidebarLink($title, $url, $currentPageTitle)
 
   <div class="sidebar">
     <h3 class="text-center mb-4 text-warning">NGUMPULIN</h3>
-    <p class="text-center text-secondary small">Login sebagai: <?= htmlspecialchars(ucfirst($userRole)) ?></p>
+    <p class="text-center text-secondary small">Halo, <?= htmlspecialchars($userName) ?>!</p>
 
     <ul class="nav flex-column">
-
-      <?php if ($userRole === 'admin'): ?>
-        <?php generateSidebarLink("Dashboard", "admin/dashboard.php", $pageTitle); ?>
-        <?php generateSidebarLink("Kelola Peserta", "admin/students.php", $pageTitle); ?>
-        <?php generateSidebarLink("Kelola Tugas", "admin/tasks.php", $pageTitle); ?>
-        <?php generateSidebarLink("Kelola Pengumpulan", "admin/submissions.php", $pageTitle); ?>
-
-      <?php elseif ($userRole === 'student'): ?>
-        <?php generateSidebarLink("Daftar Tugas", "admin/tasks.php", $pageTitle); ?>
-        <?php generateSidebarLink("Riwayat Pengumpulan", "submissions.php", $pageTitle); ?>
-
-      <?php endif; ?>
-
+      <?php generateSidebarLinkStudent("Daftar Tugas", "student/tasks.php", $pageTitle); ?>
+      <?php generateSidebarLinkStudent("Riwayat Pengumpulan", "student/submissions.php", $pageTitle); ?>
       <li class="nav-item mt-5">
         <a class="nav-link text-danger" href="<?php echo BASE_URL; ?>logout.php">Logout</a>
       </li>

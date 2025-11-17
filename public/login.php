@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user['role'] === 'admin') {
       header('Location: /ngumpulin/public/admin/dashboard.php');
     } else {
-      header('Location: /ngumpulin/public/tasks.php');
+      header('Location: /ngumpulin/public/student/tasks.php');
     }
 
     exit;

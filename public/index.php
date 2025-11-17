@@ -11,7 +11,7 @@ if (isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . 'admin/dashboard.php');
     exit;
   } else {
-    header('Location: ' . BASE_URL . 'tasks.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
   }
 } else {

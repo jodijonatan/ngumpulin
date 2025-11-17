@@ -1,8 +1,8 @@
 <?php
 // public/tasks.php
 
-require_once __DIR__ . '/../app/helpers/utils.php';
-require_once __DIR__ . '/../config/koneksi.php'; // Ini mendefinisikan $conn
+require_once __DIR__ . '../../../app/helpers/utils.php';
+require_once __DIR__ . '/../../config/koneksi.php'; // Ini mendefinisikan $conn
 require_login(); // Pastikan fungsi ini tersedia dan memuat config/session
 
 // 1. Set Judul Halaman DINAMIS
@@ -23,7 +23,7 @@ while ($r = $res->fetch_assoc()) {
 }
 
 // 3. Load Header (memuat sidebar)
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../../includes/header_student.php';
 
 ?>
 
@@ -51,5 +51,5 @@ require_once __DIR__ . '/../includes/header.php';
 
 <?php
 // 4. Load Footer
-require_once __DIR__ . '/../includes/footer.php';
+require_once __DIR__ . '/../../includes/footer_student.php';
 ?>

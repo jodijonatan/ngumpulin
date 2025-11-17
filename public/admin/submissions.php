@@ -1,47 +1,98 @@
 <?php
-require_once '../../config/config.php';
-require_once '../../config/database.php';
-require_once '../../includes/auth_check.php';
-require_once '../../includes/header.php';
-require_once '../../includes/navbar_admin.php';
+// public/admin/submissions.php
 
-$submissions = $conn->query("
-    SELECT s.*, u.name, t.title
-    FROM submissions s
-    JOIN users u ON s.user_id = u.id
-    JOIN tasks t ON s.task_id = t.id
-    ORDER BY s.created_at DESC
-");
+$requireAdmin = true;
+require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../includes/auth_check.php';
+
+$pageTitle = "Kelola Pengumpulan";
+
+// Ambil semua pengumpulan (submissions) dari semua user
+$query = "
+    SELECT 
+        s.id AS submission_id,
+        s.submitted_at,
+        s.grade,
+        t.title AS task_title,
+        u.name AS student_name,
+        u.username AS student_username,
+        t.due_date
+    FROM 
+        submissions s
+    JOIN 
+        tasks t ON t.id = s.task_id
+    JOIN
+        users u ON u.id = s.user_id
+    ORDER BY 
+        s.submitted_at DESC
+";
+
+$result = $conn->query($query);
+
+if ($result === false) {
+  die("Query daftar pengumpulan gagal: " . $conn->error);
+}
+
+$submissions = $result->fetch_all(MYSQLI_ASSOC);
+
+
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<div class="container mt-4">
-  <h2>Semua Pengumpulan Tugas</h2>
+<div class="container-fluid">
+  <h2>Daftar Semua Pengumpulan Tugas</h2>
 
-  <table class="table table-bordered mt-4">
-    <thead>
-      <tr>
-        <th>Nama</th>
-        <th>Tugas</th>
-        <th>File</th>
-        <th>Tanggal</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php while ($row = $submissions->fetch_assoc()): ?>
-        <tr>
-          <td><?= htmlspecialchars($row['name']) ?></td>
-          <td><?= htmlspecialchars($row['title']) ?></td>
-          <td>
-            <a href="../../uploads/<?= $row['filename'] ?>"
-              class="btn btn-sm btn-primary" download>
-              Download
-            </a>
-          </td>
-          <td><?= $row['created_at'] ?></td>
-        </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+  <?php if (empty($submissions)): ?>
+    <div class="alert alert-info" role="alert">
+      Belum ada tugas yang dikumpulkan oleh peserta.
+    </div>
+  <?php else: ?>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Tugas</th>
+            <th>Peserta</th>
+            <th>Waktu Submit</th>
+            <th>Status</th>
+            <th>Nilai</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php $no = 1;
+          foreach ($submissions as $sub):
+            $isLate = (strtotime($sub['submitted_at']) > strtotime($sub['due_date']));
+            $statusClass = $isLate ? 'bg-danger' : 'bg-success';
+            $statusText = $isLate ? 'Terlambat' : 'Tepat Waktu';
+          ?>
+            <tr>
+              <td><?= $no++ ?></td>
+              <td><?= htmlspecialchars($sub['task_title']) ?></td>
+              <td><?= htmlspecialchars($sub['student_name']) ?> (<?= htmlspecialchars($sub['student_username']) ?>)</td>
+              <td>
+                <?= date('d M Y H:i', strtotime($sub['submitted_at'])) ?>
+                <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
+              </td>
+              <td><?= date('d M Y H:i', strtotime($sub['due_date'])) ?></td>
+              <td>
+                <?php if ($sub['grade']): ?>
+                  <span class="badge bg-primary"><?= htmlspecialchars($sub['grade']) ?></span>
+                <?php else: ?>
+                  <span class="badge bg-secondary">Belum Dinilai</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <a href="submission_view.php?id=<?= $sub['submission_id'] ?>" class="btn btn-sm btn-info text-white">Nilai / Detail</a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  <?php endif; ?>
 </div>
 
 <?php require_once '../../includes/footer.php'; ?>
