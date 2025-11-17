@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS exkul_tasks CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE exkul_tasks;
-
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
@@ -38,4 +35,4 @@ CREATE TABLE submissions (
 -- Seed admin (ganti password sebelum import atau masukkan hash)
 -- Untuk membuat hash di PHP: <?php echo password_hash('yourpassword', PASSWORD_DEFAULT);
 INSERT INTO users (username, password, name, role) VALUES
-('admin', '$2y$10$REPLACE_WITH_HASH', 'Admin Ekskul', 'admin');
+('admin', '$2y$10$tScoVyCRfGx5PQ30gFmvve492.sf8xdscCLcboEQ2iO58foOcxh4a', 'Admin Ekskul', 'admin');

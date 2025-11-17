@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/koneksi.php';
 
+require_once __DIR__ . '/../../config/koneksi.php';
 
 function is_logged_in()
 {
@@ -17,7 +17,7 @@ function current_user()
 function require_login()
 {
   if (!is_logged_in()) {
-    header('Location: /exkul-task-manager/public/login.php');
+    header('Location: /ngumpulin/public/login.php');
     exit;
   }
 }
@@ -26,7 +26,7 @@ function require_login()
 function require_admin()
 {
   if (!is_logged_in() || $_SESSION['user']['role'] !== 'admin') {
-    header('Location: /exkul-task-manager/public/login.php');
+    header('Location: /ngumpulin/public/login.php');
     exit;
   }
 }

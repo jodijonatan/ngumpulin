@@ -1,16 +1,21 @@
 <?php
 // public/index.php
-// Simple entry: redirect user based on session/role
-session_start();
+
+// 1. Panggil config untuk memulai session dan mendapatkan BASE_URL
+require_once __DIR__ . '/../config/config.php';
+
+// 2. Simple entry: redirect user based on session/role
 if (isset($_SESSION['user'])) {
+  // Session user ada, cek role
   if ($_SESSION['user']['role'] === 'admin') {
-    header('Location: admin/dashboard.php');
+    header('Location: ' . BASE_URL . 'admin/dashboard.php');
     exit;
   } else {
-    header('Location: tasks.php');
+    header('Location: ' . BASE_URL . 'tasks.php');
     exit;
   }
 } else {
-  header('Location: login.php');
+  // Belum login, redirect ke halaman login
+  header('Location: ' . BASE_URL . 'login.php');
   exit;
 }

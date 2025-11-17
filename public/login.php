@@ -1,26 +1,38 @@
 <?php
-require_once __DIR__ . '/../app/config/koneksi.php';
 
+require_once __DIR__ . '/../config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $username = $_POST['username'];
   $password = $_POST['password'];
-  $stmt = db_prepare_and_execute('SELECT id, username, password, name, role FROM users WHERE username = ?', 's', [$username]);
+
+  $stmt = db_prepare_and_execute(
+    'SELECT id, username, password, name, role FROM users WHERE username = ?',
+    's',
+    [$username]
+  );
+
   $res = $stmt->get_result();
   $user = $res->fetch_assoc();
+
   if ($user && password_verify($password, $user['password'])) {
+
     unset($user['password']);
     $_SESSION['user'] = $user;
+
     // redirect
-    if ($user['role'] === 'admin') header('Location: admin/dashboard.php');
-    else header('Location: tasks.php');
+    if ($user['role'] === 'admin') {
+      header('Location: /ngumpulin/public/admin/dashboard.php');
+    } else {
+      header('Location: /ngumpulin/public/tasks.php');
+    }
+
     exit;
   } else {
     $error = 'Username atau password salah';
   }
 }
 ?>
-
 
 <!doctype html>
 <html>
