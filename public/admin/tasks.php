@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../includes/auth_check.php';
 
 // Ambil ID Admin yang sedang login
 $adminId = $_SESSION['user']['id'];
-$pageTitle = "Manajemen Tugas";
+$pageTitle = "Kelola Tugas";
 
 $action = $_GET['action'] ?? 'list';
 $taskId = isset($_GET['id']) ? intval($_GET['id']) : null;
@@ -135,7 +135,7 @@ require_once __DIR__ . '/../../includes/header.php';
   <?php if ($action === 'list'): ?>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0 text-primary"><i class="fas fa-clipboard-list me-2"></i> Manajemen Tugas</h2>
+      <h2 class="mb-0 text-primary"><i class="fas fa-clipboard-list me-2"></i> Kelola Tugas</h2>
       <a href="tasks.php?action=add" class="btn btn-primary shadow-sm">
         <i class="fas fa-plus-circle me-1"></i> Tambah Tugas Baru
       </a>
