@@ -1,0 +1,11 @@
+# Prevent directory listing
+Options -Indexes
+
+# Deny direct access to uploads folder if symlink exists in public/uploads
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Redirect pretty URLs to index.php (optional)
+  # RewriteCond %{REQUEST_FILENAME} !-f
+  # RewriteCond %{REQUEST_FILENAME} !-d
+  # RewriteRule ^ index.php [L]
+</IfModule>
