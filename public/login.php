@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../config/koneksi.php';
 
 // ... (kode PHP Anda untuk POST dan logika login tetap sama)
+$base_url = '/ngumpulin/';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $username = $_POST['username'];
   $password = $_POST['password'];
@@ -23,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // redirect
     if ($user['role'] === 'admin') {
-      header('Location: /ngumpulin/public/admin/dashboard.php');
+      header('Location: ' . $base_url . 'admin/dashboard');
     } else {
-      header('Location: /ngumpulin/public/student/tasks.php');
+      header('Location: ' . $base_url . 'student/tasks');
     }
 
     exit;

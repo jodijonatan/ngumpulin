@@ -1,11 +1,6 @@
-# Prevent directory listing
-Options -Indexes
+# File: ngumpulin/public/.htaccess (Bisa Dihapus jika menggunakan Root .htaccess)
 
-# Deny direct access to uploads folder if symlink exists in public/uploads
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  # Redirect pretty URLs to index.php (optional)
-  # RewriteCond %{REQUEST_FILENAME} !-f
-  # RewriteCond %{REQUEST_FILENAME} !-d
-  # RewriteRule ^ index.php [L]
+    # Jika file index.php ada di public/, tidak ada rule yang diperlukan di sini.
+    # Aturan di root sudah mengurusnya.
 </IfModule>
