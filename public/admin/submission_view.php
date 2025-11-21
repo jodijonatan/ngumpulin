@@ -1,10 +1,12 @@
 <?php
 // public/admin/submission_view.php
 
-$requireAdmin = true;
+require_once __DIR__ . '/../../app/helpers/utils.php';
+
+require_role('admin');
+
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/koneksi.php';
-require_once __DIR__ . '/../../includes/auth_check.php';
 
 $pageTitle = "Detail Pengumpulan";
 $submissionId = $_GET['id'] ?? null;

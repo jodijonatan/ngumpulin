@@ -1,29 +1,17 @@
 <?php
-// includes/auth_check.php
+// includes/auth_check.php (Versi Sederhana yang Hanya Melakukan Cek Login)
 
-// Panggil config untuk memastikan session sudah aktif
+// Panggil config untuk memastikan session sudah aktif (dan BASE_URL ada)
 if (session_status() === PHP_SESSION_NONE) {
-  // Sesuaikan path ke config.php
   require_once __DIR__ . '/../config/config.php';
 }
 
-// ===============================
-// CEK LOGIN
-// ===============================
-// Jika $_SESSION['user'] belum ada, alihkan ke halaman login
-if (!isset($_SESSION['user'])) {
-  header("Location: " . BASE_URL . "login.php");
-  exit;
-}
+// Panggil helper yang berisi require_login
+require_once __DIR__ . '/../app/helpers/utils.php';
 
-// ===============================
-// CEK ADMIN (opsional)
-// ===============================
-// menggunakan: $requireAdmin = true; sebelum include file ini
-if (isset($requireAdmin) && $requireAdmin === true) {
-  if (!isset($_SESSION['user']['role']) || $_SESSION['user']['role'] !== 'admin') {
-    // Alihkan ke halaman non-admin jika bukan admin
-    header("Location: " . BASE_URL . "index.php");
-    exit;
-  }
-}
+// Melakukan Cek Login
+require_login();
+
+// Catatan: Pengecekan ROLE spesifik (Admin/Student) sebaiknya dilakukan
+// di file halaman tujuan (e.g., dashboard.php) menggunakan require_role() 
+// untuk menghindari logika kondisional yang rumit di sini.

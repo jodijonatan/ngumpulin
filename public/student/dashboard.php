@@ -2,6 +2,9 @@
 // public/student/dashboard.php
 
 require_once __DIR__ . '/../../app/helpers/utils.php';
+
+require_role('student');
+
 require_once __DIR__ . '/../../config/koneksi.php';
 require_login();
 

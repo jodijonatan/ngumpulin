@@ -1,17 +1,12 @@
 <?php
 // public/admin/dashboard.php
+require_once __DIR__ . '/../../app/helpers/utils.php';
 
-// 1. Definisikan kebutuhan akses admin
-$requireAdmin = true;
+require_role('admin');
 
-// 2. Load Konfigurasi & Koneksi Database
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/koneksi.php';
 
-// 3. Load Autentikasi
-require_once __DIR__ . '/../../includes/auth_check.php';
-
-// 4. Set Judul Halaman DINAMIS
 $pageTitle = "Dashboard Admin";
 
 // ===================================
